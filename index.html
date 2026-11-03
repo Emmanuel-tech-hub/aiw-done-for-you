@@ -438,16 +438,18 @@
       if (demo) {
         await new Promise((r) => setTimeout(r, 700));
       } else {
+        const isGS = /script\.google(usercontent)?\.com/.test(CONFIG.WEBHOOK_URL); // Google Apps Script endpoint
         const ctl = new AbortController();
         const timer = setTimeout(() => ctl.abort(), 20000);
         const res = await fetch(CONFIG.WEBHOOK_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": isGS ? "text/plain;charset=utf-8" : "application/json" },
           body: JSON.stringify(payload),
           signal: ctl.signal
         });
         clearTimeout(timer);
         if (!res.ok) throw new Error("HTTP " + res.status);
+        if (isGS) { const j = await res.json(); if (!j.ok) throw new Error("rejected"); }
       }
       showDone(payload.name);
     } catch (err) {
