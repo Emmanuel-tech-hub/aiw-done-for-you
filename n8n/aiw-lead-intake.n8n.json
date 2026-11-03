@@ -14,7 +14,10 @@
       "name": "Form submission",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [0, 0],
+      "position": [
+        0,
+        0
+      ],
       "webhookId": "aiw-get-started-0001"
     },
     {
@@ -25,7 +28,10 @@
       "name": "Format lead",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [240, 0]
+      "position": [
+        240,
+        0
+      ]
     },
     {
       "parameters": {
@@ -39,10 +45,8 @@
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yMaMQMHwSwS21bHqsYW-bAP4ko1yVmH44Rr7NiUC28U/edit#gid=0"
+          "value": "0",
+          "mode": "id"
         },
         "columns": {
           "mappingMode": "autoMapInputData",
@@ -56,26 +60,32 @@
       "name": "Log to Leads sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
-      "position": [480, 0]
+      "position": [
+        480,
+        0
+      ],
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "resource": "message",
-        "operation": "post",
-        "select": "channel",
-        "channelId": {
-          "__rl": true,
-          "value": "PASTE_SLACK_CHANNEL_ID",
-          "mode": "id"
-        },
-        "text": "=:bell: *New lead: AI Workshop Get Started* (from {{ $('Format lead').item.json.Source }})\n*Name:* {{ $('Format lead').item.json.Name }}\n*Email:* {{ $('Format lead').item.json.Email }}\n*Phone:* {{ $('Format lead').item.json.Phone || '-' }}\n*Needs:* {{ $('Format lead').item.json.Service }}\n*Budget (USD):* {{ $('Format lead').item.json['Budget (USD)'] }}\n*Market:* {{ $('Format lead').item.json.Market || '-' }}\n*Location:* {{ $('Format lead').item.json.Location || '-' }}\n*Project:* {{ $('Format lead').item.json.Project || '-' }}\n_Logged in the Leads sheet. Reply in this thread to claim it and book the call._",
-        "otherOptions": {}
+        "operation": "send",
+        "sendTo": "reachmoredigital01@gmail.com, hammad.zahid@gptsearchboost.com, zubair.trabzada@gmail.com",
+        "subject": "=New DONE-FOR-YOU lead: {{ $('Format lead').item.json.Name }} ({{ $('Format lead').item.json.Source }})",
+        "emailType": "text",
+        "message": "=New lead from the AI Workshop DONE-FOR-YOU form\n\nName: {{ $('Format lead').item.json.Name }}\nEmail: {{ $('Format lead').item.json.Email }}\nPhone: {{ $('Format lead').item.json.Phone || '-' }}\nNeeds: {{ $('Format lead').item.json.Service }}\nBudget (USD): {{ $('Format lead').item.json['Budget (USD)'] }}\nMarket: {{ $('Format lead').item.json.Market || '-' }}\nLocation: {{ $('Format lead').item.json.Location || '-' }}\nProject: {{ $('Format lead').item.json.Project || '-' }}\nSource: {{ $('Format lead').item.json.Source }}\nReceived: {{ $('Format lead').item.json.Timestamp }}\n\nFull record: AIW Leads - Get Started form (Google Sheet). Reply to this email thread to say who is taking it, then book the call.",
+        "options": {
+          "appendAttribution": false
+        }
       },
       "id": "5f1c2a10-0004-4a00-9a00-000000000004",
-      "name": "Notify team in Slack",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.3,
-      "position": [720, 0],
+      "name": "Email the team",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        0
+      ],
       "onError": "continueRegularOutput"
     },
     {
@@ -90,21 +100,56 @@
       "name": "Reply to form",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [960, 0]
+      "position": [
+        960,
+        0
+      ]
     }
   ],
   "connections": {
     "Form submission": {
-      "main": [[{ "node": "Format lead", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Format lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Format lead": {
-      "main": [[{ "node": "Log to Leads sheet", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Log to Leads sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Log to Leads sheet": {
-      "main": [[{ "node": "Notify team in Slack", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Email the team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Notify team in Slack": {
-      "main": [[{ "node": "Reply to form", "type": "main", "index": 0 }]]
+    "Email the team": {
+      "main": [
+        [
+          {
+            "node": "Reply to form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {

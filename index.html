@@ -452,7 +452,7 @@
       showDone(payload.name);
     } catch (err) {
       console.error("Form submit failed:", err);
-      showError("We could not send that. Please check your connection and try again. (" + (err && err.message ? err.message : "error") + ")");
+      showError("Something went wrong on our side. Please try again in a moment.");
     }
   });
 </script>
