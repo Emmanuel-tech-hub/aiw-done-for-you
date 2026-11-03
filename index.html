@@ -438,16 +438,21 @@
       if (demo) {
         await new Promise((r) => setTimeout(r, 700));
       } else {
+        const ctl = new AbortController();
+        const timer = setTimeout(() => ctl.abort(), 20000);
         const res = await fetch(CONFIG.WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: ctl.signal
         });
+        clearTimeout(timer);
         if (!res.ok) throw new Error("HTTP " + res.status);
       }
       showDone(payload.name);
     } catch (err) {
-      showError("We could not send that. Please check your connection and try again.");
+      console.error("Form submit failed:", err);
+      showError("We could not send that. Please check your connection and try again. (" + (err && err.message ? err.message : "error") + ")");
     }
   });
 </script>
